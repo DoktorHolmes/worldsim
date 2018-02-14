@@ -31,7 +31,7 @@ class World:
 		self.sealevel = sealevel
 		self.year = 1
 		self.name = random.choice(self.worldprefixes) + random.choice(self.worldsuffixes)
-		self.races = [Race(0, "Skerran", "Avian", 3, "F", 45, 226), Race(1, "Ravakan", "Reptilian", 4, "P", 60, 196), Race(2, "Ahn'litend", "Artificial", 2, "F", 245, 129)]
+		self.races = [Race(0, "Skerran", "Avian", 3, "F", 45, 226, "avian"), Race(1, "Ravakan", "Reptilian", 4, "P", 60, 196, "reptile"), Race(2, "Ahn'litend", "Artificial", 2, "F", 245, 129, "robot")]
 		self.settlements = []
 	def generateMap(self):
 		for x in range(0, self.width):
@@ -149,7 +149,7 @@ class World:
 				if(tile.biome == self.races[r].biomePref):
 					x = next((i for i, sublist in enumerate(self.tiles) if tile in sublist), -1)
 					y = self.tiles[x].index(tile)
-					tile.settlement = Settlement(x, y, random.choice(self.worldprefixes) + random.choice(self.worldsuffixes), "%", random.randrange(150, 300), r)
+					tile.settlement = Settlement(x, y, random.choice(self.races[r].citynames), str(len(self.settlements) + 1), random.randrange(150, 300), r)
 					tile.color = ""
 					tile.colorX = self.races[r].color
 					self.settlements.append(tile.settlement)
@@ -161,7 +161,7 @@ class World:
 		for r in range(len(self.settlements)):
 			if(self.settlements[r].warTarget != None):
 				warTarget = self.settlements[r].warTarget
-				self.settlements[r].population -= math.floor(self.settlements[r].warTarget.population * 0.05) * ticks
+				self.settlements[r].population -= int(self.settlements[r].warTarget.population * 0.05 * ticks)
 				if(self.settlements[r].population < 100):
 					self.tiles[self.settlements[r].x][self.settlements[r].y].colorX = self.races[warTarget.raceID].color
 					self.settlements[r].warTarget = None
@@ -169,15 +169,15 @@ class World:
 					self.settlements[r].warTarget = None
 			else:
 				tile = self.tiles[self.settlements[r].x][self.settlements[r].y]
-				self.settlements[r].population += self.settlements[r].population * 0.05 * tile.food
-				self.settlements[r].wealth += random.randrange(25, 100) * tile.metals
+				self.settlements[r].population += self.settlements[r].population * 0.05
+				self.settlements[r].wealth += random.randrange(25, 100)
 				if(self.settlements[r].population >= 1000 and self.settlements[r].warTarget == None and random.randrange(1, 100) <= 10):
 					for c in range(len(self.settlements)):
-						dist = math.hypot(self.settlements[c].x - self.settlements[r].x, self.settlements[c].y - self.settlements[r].y)
+						dist = math.hypot(self.settlements[r].x - self.settlements[c].x, self.settlements[r].y - self.settlements[c].y)
 						if(dist <= 15):
 							self.settlements[r].warTarget = self.settlements[c]
 							self.settlements[c].warTarget = self.settlements[r]
-				elif(self.settlements[r].population >= 1500 and self.settlements[r].warTarget == None):
+				elif(self.settlements[r].population >= 2500 and self.settlements[r].warTarget == None):
 					isSpawned = "NONE"
 					while(isSpawned == "NONE"):
 						tile2 = random.choice(random.choice(self.tiles))
@@ -186,7 +186,7 @@ class World:
 							y = self.tiles[x].index(tile2)
 							dist = math.hypot(self.settlements[r].x - x, self.settlements[r].y - y)
 							if(dist <= 15):
-								tile2.settlement = Settlement(x, y, random.choice(self.worldprefixes) + random.choice(self.worldsuffixes), "%", 500, self.settlements[r].raceID)
+								tile2.settlement = Settlement(x, y, random.choice(self.races[self.settlements[r].raceID].citynames), str(len(self.settlements) + 1), 500, self.settlements[r].raceID)
 								tile2.color = ""
 								tile2.colorX = self.races[self.settlements[r].raceID].color
 								self.settlements.append(tile2.settlement)
@@ -204,7 +204,7 @@ class Tile:
 		self.biome = "B"
 		self.settlement = None
 class Race:
-	def __init__(self, id, name, type, population, biomePref, lifeSpan, color):
+	def __init__(self, id, name, type, population, biomePref, lifeSpan, color, namelist):
 		self.id = id
 		self.name = name
 		self.type = type
@@ -212,6 +212,9 @@ class Race:
 		self.biomePref = biomePref
 		self.lifeSpan = lifeSpan
 		self.color = color
+		self.namelist = namelist
+		with open(os.getcwd() + "\\data\\names\\cities\\" + self.namelist + ".txt", "r+") as f:
+			self.citynames = f.readlines()
 
 class Settlement:
 	def __init__(self, x, y, name, type, population, raceID):
@@ -225,8 +228,14 @@ class Settlement:
 		self.wealth = 100
 		self.warTarget = None
 
+def drawTable(data):
+	for i, d in enumerate(data):
+		line = '|'.join(str(x).ljust(12) for x in d)
+		print(line)
+		if i == 0:
+			print('-' * len(line))
 
-
+		
 global world
 world = World(117, 50, 5, 8, 120, 0, None)
 world.generateMap()
@@ -256,28 +265,47 @@ def sim():
 					world.printBiomeMap()
 					print(world.name + ", in the year " + str(world.year))
 					yearsDone += 1
-					time.sleep(1.0 - ((time.time() - starttime) % 1.0))
+					time.sleep(3.0 - ((time.time() - starttime) % 3.0))
 			except ValueError:
 				print("Please enter the number of years as a number!")
 		elif(inp == "cities"):
 			clearScreen()
-			print("CITIES:")
+			data = []
+			titles = ["Name", "Race", "Population", "At war with", "Coordinates"]
+			names = []
+			races = []
+			pops = []
+			warTargets = []
+			numbers = []
+			coords = []
 			for r in range(len(world.settlements)):
-				print("\n" + world.settlements[r].name)
-				print("Race: " + world.races[world.settlements[r].raceID].name)
-				print("Population: " + str(world.settlements[r].population))
+				names.append(world.settlements[r].name.strip("\n"))
+				races.append(world.races[world.settlements[r].raceID].name)
+				pops.append(str(math.floor(world.settlements[r].population)))
 				if(world.settlements[r].warTarget != None):
-					print(red("At war with " + str(world.settlements[r].warTarget.name)))
-				print("Coordinates: (" + str(world.settlements[r].x) + ", " + str(world.settlements[r].y) + ")")
+					warTargets.append(str(world.settlements[r].warTarget.name.strip("\n")))
+				else:
+					warTargets.append("Nobody")
+				coords.append("(" + str(world.settlements[r].x) + ", " + str(world.settlements[r].y) + ")")
+				numbers.append(str(r + 1))
+				data = [titles] + list(zip(names, races, pops, warTargets, coords, numbers))
+			drawTable(data)
 			input("PRESS ENTER TO CONTINUE")
 		elif(inp == "races"):
 			clearScreen()
-			print("RACES:")
+			data = []
+			titles = ["Name", "Type", "Biome Pref.", "Average Lifespan"]
+			names = []
+			types = []
+			biomePrefs = []
+			lifeSpans = []
 			for r in range(len(world.races)):
-				print("\n\n" + world.races[r].name)
-				print("Type: " + world.races[r].type)
-				print("Biome Preference: " + world.races[r].biomePref)
-				print("Average Lifespan: " + str(world.races[r].lifeSpan))
+				names.append(world.races[r].name)
+				types.append(world.races[r].type)
+				biomePrefs.append(world.races[r].biomePref)
+				lifeSpans.append(world.races[r].lifeSpan)
+				data = [titles] + list(zip(names, types, biomePrefs, lifeSpans))
+			drawTable(data)
 			input("PRESS ENTER TO CONTINUE")
 		elif(inp == "back"):
 			break
@@ -292,30 +320,10 @@ def game():
 		world.printBiomeMap()
 		print("\n\nWelcome to WorldSim! A simulation of a planet and its inhabitants")
 		print("Enter a command below to navigate")
-		print("COMMANDS: races cities map sim help")
+		print("COMMANDS: map sim help")
 		inp = input(">: ")
-		if(inp == "races"):
-			clearScreen()
-			print("RACES:")
-			for r in range(len(world.races)):
-				print("\n\n" + world.races[r].name)
-				print("Type: " + world.races[r].type)
-				print("Biome Preference: " + world.races[r].biomePref)
-				print("Average Lifespan: " + str(world.races[r].lifeSpan))
-			input("PRESS ENTER TO CONTINUE")
-		elif(inp == "sim"):
+		if(inp == "sim"):
 			sim()
-		elif(inp == "cities"):
-			clearScreen()
-			print("CITIES:")
-			for r in range(len(world.settlements)):
-				print("\n" + world.settlements[r].name)
-				print("Race: " + world.races[world.settlements[r].raceID].name)
-				print("Population: " + str(world.settlements[r].population))
-				if(world.settlements[r].warTarget != None):
-					print(red("At war with " + str(world.settlements[r].warTarget.name)))
-				print("Coordinates: (" + str(world.settlements[r].x) + ", " + str(world.settlements[r].y) + ")")
-			input("PRESS ENTER TO CONTINUE")
 		elif(inp == "map"):
 			while True:
 				clearScreen()
