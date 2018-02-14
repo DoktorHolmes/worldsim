@@ -1,7 +1,7 @@
 # World Simulator
 
 # What is World Simulator?
-World Simulator is a Python 3.6 program which generates an alien planet and will eventually generate sapient species to inhabit this world and create a detailed history for them.  I plan for it to be similar to Dwarf Fortress's adventure mode eventually but in a science-fiction setting.
+World Simulator is a Python 3.6 program which generates an alien planet and will eventually generate sapient species to inhabit this world and create a detailed history for them.  I plan for it to be similar to Dwarf Fortress's adventure mode eventually but in a more science-fiction oriented setting.
 
 # Well, what can it do at this current moment?
 The program can generate planet maps using simplex noise.  You are able to generate new maps inside the program and they can be tweaked in many ways such as size (obviously), sea level, temperature offset, octaves, and numerical seeds.
