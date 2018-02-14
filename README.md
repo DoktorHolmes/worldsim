@@ -15,7 +15,9 @@ Ansicolors - https://github.com/verigak/colors/ (pip install ansicolors)
 # Screenshots
 ![A sample of a randomly generated planet](/Screenshots/Screenshot01.png?raw=true "A sample planet") 
 
-![The same planet, but colder](/Screenshots/Screenshot02.png?raw=true "The same planet, but colder")
+![Another sample planet](/Screenshots/Screenshot06.png?raw=true "Another sample planet") 
+
+![The same planet, but colder](/Screenshots/Screenshot02.png?raw=true "The first planet, but colder")
 
 ![The same planet, but much hotter](/Screenshots/Screenshot03.png?raw=true "Much hotter")
 
