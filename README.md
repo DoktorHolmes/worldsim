@@ -13,8 +13,8 @@ Ansicolors - https://github.com/verigak/colors/ (pip install ansicolors)
 
 
 # Screenshots
-![A sample of a randomly generated planet](/Screenshots/Screenshot01.png?raw=true "A sample planet")
-![The same planet, but colder](/Screenshots/Screenshot02.png?raw=true "The same planet, but colder")
-![The same planet, but much hotter](/Screenshots/Screenshot03.png?raw=true "Much hotter")
-![Increased water levels](/Screenshots/Screenshot04.png?raw=true "Increased water levels")
-![Decreased water levels](/Screenshots/Screenshot05.png?raw=true "Decreased water levels")
+![A sample of a randomly generated planet](/Screenshots/Screenshot01.png?raw=true "A sample planet") <!-- .element height="50%" width="50%" -->
+![The same planet, but colder](/Screenshots/Screenshot02.png?raw=true "The same planet, but colder")<!-- .element height="50%" width="50%" -->
+![The same planet, but much hotter](/Screenshots/Screenshot03.png?raw=true "Much hotter")<!-- .element height="50%" width="50%" -->
+![Increased water levels](/Screenshots/Screenshot04.png?raw=true "Increased water levels")<!-- .element height="50%" width="50%" -->
+![Decreased water levels](/Screenshots/Screenshot05.png?raw=true "Decreased water levels")<!-- .element height="50%" width="50%" -->
