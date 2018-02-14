@@ -149,7 +149,7 @@ class World:
 				if(tile.biome == self.races[r].biomePref):
 					x = next((i for i, sublist in enumerate(self.tiles) if tile in sublist), -1)
 					y = self.tiles[x].index(tile)
-					tile.settlement = Settlement(x, y, random.choice(self.races[r].citynames), str(len(self.settlements) + 1), random.randrange(150, 300), r)
+					tile.settlement = Settlement(x, y, random.choice(self.races[r].citynames), "%", random.randrange(150, 300), r)
 					tile.color = ""
 					tile.colorX = self.races[r].color
 					self.settlements.append(tile.settlement)
@@ -158,41 +158,43 @@ class World:
 	
 	def doTick(self, ticks):
 		self.year += 1 * ticks
-		for r in range(len(self.settlements)):
-			if(self.settlements[r].warTarget != None):
-				warTarget = self.settlements[r].warTarget
-				self.settlements[r].population -= int(self.settlements[r].warTarget.population * 0.05 * ticks)
-				if(self.settlements[r].population < 100):
-					self.tiles[self.settlements[r].x][self.settlements[r].y].colorX = self.races[warTarget.raceID].color
-					self.settlements[r].warTarget = None
-					self.settlements[r].raceID = warTarget.raceID
-					self.settlements[r].warTarget = None
-			else:
-				tile = self.tiles[self.settlements[r].x][self.settlements[r].y]
-				self.settlements[r].population += self.settlements[r].population * 0.05
-				self.settlements[r].wealth += random.randrange(25, 100)
-				if(self.settlements[r].population >= 1000 and self.settlements[r].warTarget == None and random.randrange(1, 100) <= 10):
-					for c in range(len(self.settlements)):
-						dist = math.hypot(self.settlements[r].x - self.settlements[c].x, self.settlements[r].y - self.settlements[c].y)
-						if(dist <= 15):
-							self.settlements[r].warTarget = self.settlements[c]
-							self.settlements[c].warTarget = self.settlements[r]
-				elif(self.settlements[r].population >= 2500 and self.settlements[r].warTarget == None):
-					isSpawned = "NONE"
-					while(isSpawned == "NONE"):
-						tile2 = random.choice(random.choice(self.tiles))
-						if(tile2.biome == self.races[self.settlements[r].raceID].biomePref):
-							x = next((i for i, sublist in enumerate(self.tiles) if tile2 in sublist), -1)
-							y = self.tiles[x].index(tile2)
-							dist = math.hypot(self.settlements[r].x - x, self.settlements[r].y - y)
+		for i in range(ticks):
+			for r in range(len(self.settlements)):
+				if(self.settlements[r].warTarget != None):
+					warTarget = self.settlements[r].warTarget
+					self.settlements[r].population -= int(self.settlements[r].warTarget.population * 0.05)
+					if(self.settlements[r].population < 100):
+						self.tiles[self.settlements[r].x][self.settlements[r].y].colorX = self.races[warTarget.raceID].color
+						self.settlements[r].warTarget = None
+						self.settlements[r].raceID = warTarget.raceID
+						self.settlements[r].warTarget = None
+						self.settlements[r].population = 100
+				else:
+					tile = self.tiles[self.settlements[r].x][self.settlements[r].y]
+					self.settlements[r].population += self.settlements[r].population * 0.05
+					self.settlements[r].wealth += random.randrange(25, 100)
+					if(self.settlements[r].population >= 1000 and self.settlements[r].warTarget == None and random.randrange(1, 100) <= 10):
+						for c in range(len(self.settlements)):
+							dist = math.hypot(self.settlements[r].x - self.settlements[c].x, self.settlements[r].y - self.settlements[c].y)
 							if(dist <= 15):
-								tile2.settlement = Settlement(x, y, random.choice(self.races[self.settlements[r].raceID].citynames), str(len(self.settlements) + 1), 500, self.settlements[r].raceID)
-								tile2.color = ""
-								tile2.colorX = self.races[self.settlements[r].raceID].color
-								self.settlements.append(tile2.settlement)
-								isSpawned = True
-								self.settlements[r].population -= 500
-					isSpawned = "NONE"
+								self.settlements[r].warTarget = self.settlements[c]
+								self.settlements[c].warTarget = self.settlements[r]
+					elif(self.settlements[r].population >= 2500 and self.settlements[r].warTarget == None):
+						isSpawned = "NONE"
+						while(isSpawned == "NONE"):
+							tile2 = random.choice(random.choice(self.tiles))
+							if(tile2.biome == self.races[self.settlements[r].raceID].biomePref):
+								x = next((i for i, sublist in enumerate(self.tiles) if tile2 in sublist), -1)
+								y = self.tiles[x].index(tile2)
+								dist = math.hypot(self.settlements[r].x - x, self.settlements[r].y - y)
+								if(dist <= 15):
+									tile2.settlement = Settlement(x, y, random.choice(self.races[self.settlements[r].raceID].citynames), "%", 500, self.settlements[r].raceID)
+									tile2.color = ""
+									tile2.colorX = self.races[self.settlements[r].raceID].color
+									self.settlements.append(tile2.settlement)
+									isSpawned = True
+									self.settlements[r].population -= 500
+						isSpawned = "NONE"
 class Tile:
 	def __init__(self, id, type, elevation, food, metals):
 		self.id = id
@@ -256,18 +258,19 @@ def sim():
 		inp = input(">: ")
 		if(inp == "run"):
 			try:
-				ticks = int(input("Enter the number of years to run: "))
+				ticks = int(input("Enter the number of ticks to run: "))
+				ticks2 = int(input("Enter the number of years per tick: "))
 				yearsDone = 0
 				starttime=time.time()
 				while (yearsDone < ticks):
-					world.doTick(1)
+					world.doTick(ticks2)
 					clearScreen()
 					world.printBiomeMap()
 					print(world.name + ", in the year " + str(world.year))
 					yearsDone += 1
 					time.sleep(3.0 - ((time.time() - starttime) % 3.0))
 			except ValueError:
-				print("Please enter the number of years as a number!")
+				print("Please enter the numbers of years and ticks as numbers!")
 		elif(inp == "cities"):
 			clearScreen()
 			data = []
