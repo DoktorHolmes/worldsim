@@ -9,7 +9,7 @@ import noise
 from noise import pnoise2, snoise2, snoise3
 from colors import red, green, yellow, blue, magenta, cyan, white, color
 
-from faker import Faker #Temporary name generation module
+#from faker import Faker #Temporary name generation module
 
 class World:
 	def __init__(self, width, height, lushness, richness, sealevel, temperature, seed):
