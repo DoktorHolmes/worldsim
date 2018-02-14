@@ -80,6 +80,12 @@ class World:
 				biome = int(snoise3(x / freq, y / freq, self.seed, octaves) * 127.0 + 128.0)
 				biome += self.temperature
 				if(self.tiles[x][y].elevation >= self.sealevel):
+					if(y >= 50 and y <= self.height - 50):
+						biome += 40
+					elif(y >= self.height - 10):
+						biome -= 80
+					elif(y < 10):
+						biome -= 80
 					if(self.tiles[x][y].elevation >= self.sealevel + 85):
 						self.tiles[x][y].biome = white("^")
 						self.tiles[x][y].color = "white"
@@ -92,10 +98,10 @@ class World:
 					elif(biome < 145):
 						self.tiles[x][y].biome = green("F") #Forest
 						self.tiles[x][y].color = "green"
-					elif(biome < 165):
+					elif(biome < 195):
 						self.tiles[x][y].biome = color("P", 154) #Plains
 						self.tiles[x][y].colorX = 154
-					elif(biome < 185):
+					elif(biome < 205):
 						self.tiles[x][y].biome = color("W", 94) #Wetlands
 						self.tiles[x][y].colorX = 94
 					elif(biome < 225):
@@ -104,6 +110,7 @@ class World:
 					else:
 						self.tiles[x][y].biome = color("D", 215) #Desert
 						self.tiles[x][y].colorX = 215
+					
 				else:
 					self.tiles[x][y].biome = blue("~") #Ocean
 					self.tiles[x][y].color = "blue"
@@ -187,7 +194,7 @@ def game():
 							else:
 								seed = None
 							temperature = int(input("Enter temperature offset (Suggested: -20 to 20): "))
-							octaves = int(input("Enter a number of octaves (Suggested: 1 to 4): "))
+							octaves = int(input("Enter a number of octaves (Suggested: 3 to 4): "))
 							print("Generating...")
 							world = World(width, height, 30, 20, sealevel, temperature, seed)
 							world.generateMap()
