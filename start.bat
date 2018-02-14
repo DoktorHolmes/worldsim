@@ -1,0 +1,2 @@
+python worldsim.py
+pause
