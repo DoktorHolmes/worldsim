@@ -8,7 +8,9 @@ The program can generate planet maps using simplex noise.  You are able to gener
 
 # Requirements
 Python 3.6.X https://www.python.org/downloads/windows/
+
 Noise - https://github.com/caseman/noise (pip install noise)
+
 Ansicolors - https://github.com/verigak/colors/ (pip install ansicolors)
 
 
