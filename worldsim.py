@@ -228,7 +228,7 @@ class Race:
 		with open(os.getcwd() + "\\data\\names\\cities\\" + self.namelist + ".txt", "r+") as f:
 			self.citynames = f.readlines()
 		self.name = random.choice(self.citynames).strip("\n")
-		self.biomePref = random.choice(["A", "T", "F", "P", "W", "J", "D"])
+		self.biomePref = random.choice(["A", "T", "F", "P", "J", "D"])
 		self.type = random.choice(["Avian", "Humanoid", "Reptilian", "Silicoid", "Fungoid", "Plantoid", "Insectoid"])
 		self.population = random.randrange(4, 16)
 		self.lifeSpan = random.randrange(20, 200)
