@@ -31,9 +31,7 @@ class World:
 		self.sealevel = sealevel
 		self.year = 1
 		self.name = random.choice(self.worldprefixes) + random.choice(self.worldsuffixes)
-		self.races = [Race(0, "Skerran", "Avian", random.randrange(7, 10), "F", 45, 226, "avian"), Race(1, "Ravakan", "Reptilian", random.randrange(7, 10), "P", 60, 196, "reptile"), Race(2, "Ahn'litend", "Artificial", random.randrange(7, 10), "F", 245, 129, "robot"), Race(3, "Ixx'ra Swarm", "Hive Mind", random.randrange(6, 10), "A", 245, 52, "insectoid"), Race(4, "Orkathi", "
-		
-		oid", random.randrange(7, 10), "P", 245, 214, "reptile")]
+		self.races = [Race(0, "Skerran", "Avian", random.randrange(7, 10), "F", 45, 226, "avian"), Race(1, "Ravakan", "Reptilian", random.randrange(7, 10), "P", 60, 196, "reptile"), Race(2, "Ahn'litend", "Artificial", random.randrange(7, 10), "F", 245, 129, "robot"), Race(3, "Ixx'ra Swarm", "Hive Mind", random.randrange(6, 10), "A", 245, 52, "insectoid"), Race(4, "Orkathi", "Humanoid", random.randrange(7, 10), "P", 245, 214, "reptile")]
 		self.settlements = []
 	def generateMap(self):
 		for x in range(0, self.width):
@@ -380,13 +378,14 @@ def game():
 							else:
 								seed = None
 							temperature = int(input("Enter temperature offset (Suggested: -20 to 20): "))
+							numRaces = int(input("Enter a number of sapient races (Suggested: 1-7: "))
 							octaves = int(input("Enter a number of octaves (Suggested: 3 to 4): "))
 							print("Generating...")
 							world = World(width, height, 30, 20, sealevel, temperature, seed)
 							world.generateMap()
 							world.generatePerlinMap(octaves)
 							world.generateBiomeMap(2)
-							world.generateRaces(random.randrange(1, 9))
+							world.generateRaces(numRaces)
 							world.generateCities()
 							print("Generation success!")
 							time.sleep(1.0)

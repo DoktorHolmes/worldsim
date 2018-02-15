@@ -1,20 +1,3 @@
-Core 01A
-Core 04B
-Core 92J
-Core 7K4
-Core 22R
-Core 43H
-Core 22L
-Core 52N
-Core 23G
-Core 45L
-Core 23B
-Core 21H
-Core R02
-Core JK3
-Core K0T
-Core M4K
-Core ST2
 Nexus
 Hub
 Bridge
