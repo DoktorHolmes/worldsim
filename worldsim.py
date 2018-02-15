@@ -314,7 +314,7 @@ def sim():
 		elif(inp == "races"):
 			clearScreen()
 			data = []
-			titles = ["Name", "Type", "Biome Pref.", "Average Lifespan", "ID", "Map Color"]
+			titles = ["Name", "Type", "Biome Pref.", "Average Lifespan", "Map Color"]
 			names = []
 			types = []
 			biomePrefs = []
@@ -326,7 +326,7 @@ def sim():
 				biomePrefs.append(world.races[r].biomePref)
 				lifeSpans.append(world.races[r].lifeSpan)
 				colors.append(color("%", world.races[r].color))
-				data = [titles] + list(zip(names, types, biomePrefs, lifeSpans))
+				data = [titles] + list(zip(names, types, biomePrefs, lifeSpans, colors))
 			drawTable(data)
 			input("PRESS ENTER TO CONTINUE")
 		elif(inp == "back"):
