@@ -200,15 +200,27 @@ class World:
 			self.history = ""
 			for r2 in range(len(self.empires)):
 				race = self.empires[r2]
+				if(random.randrange(1, 250) + (self.empires[r2].population) <= 2 + 2 * self.empires[r2].population):
+					newEmpire = Empire(len(self.empires), random.choice(self.empires[r2].citynames) + random.choice([" Kingdom", " Republic"]), self.empires[r2].type, 1, self.empires[r2].biomePref, self.empires[r2].lifeSpan, random.randrange(17, 229))
+					self.empires.append(newEmpire)
+					for s in range(len(self.settlements)):
+						if(self.settlements[s].controller == self.empires[r2]):
+							if(random.randrange(1, 3) == 2):
+								self.settlements[s].controller = newEmpire
+								newEmpire.population += 1
+					self.history += str(self.year) + ": The " + newEmpire.name + " has seceded from the " + self.empires[r2].name + " and taken " + str(newEmpire.population) + " cities with them.\n"
+					continue
 				if(self.empires[r2].population <= 0):
 					self.history += str(self.year) + ": The " + race.name + " have been completely purged by their enemies\n"
+					self.empires[r2].warTarget = None
 				for r3 in range(len(self.empires)):
 					if(self.getEmpireDistance(self.empires[r2], self.empires[r3]) <= 25 and self.empires[r2].population > self.empires[r3].population and random.randrange(1, 100) <= 3):
 						self.empires[r2].warTarget = self.empires[r3]
 						self.empires[r3].warTarget = self.empires[r2]
-						self.history += str(self.year) + ": The " + self.empires[r2].name + " declared war on the " + self.empires[r3].name
+						self.history += str(self.year) + ": The " + self.empires[r2].name + " declared war on the " + self.empires[r3].name + "\n"
 					else:
 						continue
+					
 						
 			self.year += 1
 			for r in range(len(self.settlements)):
@@ -240,26 +252,27 @@ class World:
 				tile = self.tiles[self.settlements[r].x][self.settlements[r].y]
 				if(self.settlements[r].population <= 5000 and self.settlements[r].warTarget == None):
 					self.settlements[r].population += (self.settlements[r].population) * 0.05
+					
+					
+					
 				self.settlements[r].wealth += random.randrange(25, 100)
-				if(self.settlements[r].population >= 1600 and self.settlements[r].controller.warTarget == None and random.randrange(1, 100) <= 25):
-					isSpawned = "NONE"
-					while(isSpawned == "NONE"):
+				if(self.settlements[r].population >= 1500 + (150 * self.settlements[r].controller.population) and self.settlements[r].controller.warTarget == None and random.randrange(1, 100) <= 25):
+					while True:
 						tile2 = random.choice(random.choice(self.tiles))
-						if(tile2.biome == self.empires[self.settlements[r].raceID].biomePref):
+						if(tile2.type != "^" and tile2.type != "~"):
 							x = next((i for i, sublist in enumerate(self.tiles) if tile2 in sublist), -1)
 							y = self.tiles[x].index(tile2)
 							dist = math.hypot(self.settlements[r].x - x, self.settlements[r].y - y)
-							if(dist <= 15):
-								tile2.settlement = Settlement(x, y, random.choice(self.empires[self.settlements[r].raceID].citynames), "%", 500, self.settlements[r].raceID)
+							if(dist <= 12):
+								tile2.settlement = Settlement(x, y, random.choice(self.empires[self.settlements[r].raceID].citynames), "%", 300, self.settlements[r].raceID)
 								tile2.color = ""
 								tile2.colorX = self.empires[self.settlements[r].raceID].color
 								self.settlements.append(tile2.settlement)
 								isSpawned = True
-								self.settlements[r].population -= int(self.settlements[r].population / 3)
+								self.settlements[r].population -= int(self.settlements[r].population / 2)
 								self.empires[self.settlements[r].raceID].population += 1
 								self.history += str(self.year) + ": the " + self.empires[self.settlements[r].raceID].name + " city of " + self.settlements[r].name + " settled a new city called " + tile2.settlement.name + "\n"
-					isSpawned = "NONE"
-					continue
+								break
 				
 				
 class Tile:
@@ -351,7 +364,7 @@ world.generatePerlinMap(3)
 print("Generating biomes...")
 world.generateBiomeMap(3)
 print("Uplifting sapient life...")
-world.generateEmpires(random.randrange(3, 5), random.randrange(1, 3))
+world.generateEmpires(random.randrange(5, 8), random.randrange(1, 3))
 print("Building cities...")
 world.generateCities()
 
@@ -381,11 +394,10 @@ def sim():
 					with open(os.getcwd() + "\\histories\\" + world.name + ".txt", "a+") as f:
 						f.write(world.history)
 						f.close()
-					time.sleep(4.0 - ((time.time() - starttime) % 4.0))
+					time.sleep(4.0)
 			except ValueError as e:
 				print("Please enter the numbers of years and ticks as numbers!")
-				print(e)
-				time.sleep(7)	
+				time.sleep(4)
 		elif(inp == "cities"):
 			clearScreen()
 			data = []
@@ -482,7 +494,7 @@ def game():
 								seed = None
 							temperature = int(input("Enter temperature offset (Suggested: -20 to 20): "))
 							numRaces = int(input("Enter a number of sapient races (Suggested: 1-3: "))
-							numEmpires = int(input("Enter a number of empires (Suggested: 2-12): "))
+							numEmpires = int(input("Enter a number of empires (Suggested: 4-12): "))
 							octaves = int(input("Enter a number of octaves (Suggested: 3 to 4): "))
 							print("Generating...")
 							world = World(width, height, 30, 20, sealevel, temperature, seed)
