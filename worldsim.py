@@ -31,7 +31,7 @@ class World:
 		self.sealevel = sealevel
 		self.year = 1
 		self.name = random.choice(self.worldprefixes) + random.choice(self.worldsuffixes)
-		self.races = [Race(0, "Skerran", "Avian", 3, "F", 45, 226, "avian"), Race(1, "Ravakan", "Reptilian", 4, "P", 60, 196, "reptile"), Race(2, "Ahn'litend", "Artificial", 2, "F", 245, 129, "robot")]
+		self.races = [Race(0, "Skerran", "Avian", random.randrange(7, 10), "F", 45, 226, "avian"), Race(1, "Ravakan", "Reptilian", random.randrange(7, 10), "P", 60, 196, "reptile"), Race(2, "Ahn'litend", "Artificial", random.randrange(7, 10), "F", 245, 129, "robot"), Race(3, "Ixx'ra Swarm", "Hive Mind", random.randrange(6, 10), "A", 245, 52, "insectoid"), Race(4, "Orkathi", "Humanoid", random.randrange(7, 10), "P", 245, 214, "reptile")]
 		self.settlements = []
 	def generateMap(self):
 		for x in range(0, self.width):
@@ -155,7 +155,13 @@ class World:
 					self.settlements.append(tile.settlement)
 					spawned += 1
 	
-	
+	def generateRaces(self, numRaces):
+		self.races = []
+		for r in range (numRaces):
+			race = Race(r, "Human", "Humanoid", 1, "F", 70, 1, "human")
+			race.random()
+			self.races.append(race)
+			
 	def doTick(self, ticks):
 		self.year += 1 * ticks
 		for i in range(ticks):
@@ -176,7 +182,7 @@ class World:
 					if(self.settlements[r].population >= 1000 and self.settlements[r].warTarget == None and random.randrange(1, 100) <= 10):
 						for c in range(len(self.settlements)):
 							dist = math.hypot(self.settlements[r].x - self.settlements[c].x, self.settlements[r].y - self.settlements[c].y)
-							if(dist <= 15):
+							if(dist <= 15 and self.settlements[c] != self.settlements[r]):
 								self.settlements[r].warTarget = self.settlements[c]
 								self.settlements[c].warTarget = self.settlements[r]
 					elif(self.settlements[r].population >= 2500 and self.settlements[r].warTarget == None):
@@ -217,6 +223,16 @@ class Race:
 		self.namelist = namelist
 		with open(os.getcwd() + "\\data\\names\\cities\\" + self.namelist + ".txt", "r+") as f:
 			self.citynames = f.readlines()
+	def random(self):
+		self.namelist = random.choice(["avian", "insectoid", "reptile"])
+		with open(os.getcwd() + "\\data\\names\\cities\\" + self.namelist + ".txt", "r+") as f:
+			self.citynames = f.readlines()
+		self.name = random.choice(self.citynames).strip("\n")
+		self.biomePref = random.choice(["A", "T", "F", "P", "W", "J", "D"])
+		self.type = random.choice(["Avian", "Humanoid", "Reptilian", "Silicoid", "Fungoid", "Plantoid", "Insectoid"])
+		self.population = random.randrange(4, 16)
+		self.lifeSpan = random.randrange(20, 200)
+		self.color = random.randrange(17, 229)
 
 class Settlement:
 	def __init__(self, x, y, name, type, population, raceID):
@@ -243,6 +259,7 @@ world = World(117, 50, 5, 8, 120, 0, None)
 world.generateMap()
 world.generatePerlinMap(2)
 world.generateBiomeMap(2)
+world.generateRaces(random.randrange(1, 9))
 world.generateCities()
 
 def clearScreen():
@@ -297,16 +314,18 @@ def sim():
 		elif(inp == "races"):
 			clearScreen()
 			data = []
-			titles = ["Name", "Type", "Biome Pref.", "Average Lifespan"]
+			titles = ["Name", "Type", "Biome Pref.", "Average Lifespan", "ID", "Map Color"]
 			names = []
 			types = []
 			biomePrefs = []
 			lifeSpans = []
+			colors = []
 			for r in range(len(world.races)):
 				names.append(world.races[r].name)
 				types.append(world.races[r].type)
 				biomePrefs.append(world.races[r].biomePref)
 				lifeSpans.append(world.races[r].lifeSpan)
+				colors.append(color("%", world.races[r].color))
 				data = [titles] + list(zip(names, types, biomePrefs, lifeSpans))
 			drawTable(data)
 			input("PRESS ENTER TO CONTINUE")
@@ -365,6 +384,7 @@ def game():
 							world.generateMap()
 							world.generatePerlinMap(octaves)
 							world.generateBiomeMap(2)
+							world.generateRaces(random.randrange(1, 9))
 							world.generateCities()
 							print("Generation success!")
 							time.sleep(1.0)
