@@ -2,7 +2,7 @@
 World Simulator is a Python 3.6 program which generates an alien planet and generates sapient species to inhabit this world and will eventually create a detailed history for them.  I plan for it to be similar to Dwarf Fortress's adventure mode eventually but in a more science-fiction oriented setting.
 
 # What can it do?
-The program can generate planet maps using simplex noise and run a basic (for now) simulation of the society of randomly generated species.  You are able to generate new maps inside the program and they can be tweaked in many ways such as size (obviously), sea level, temperature offset, octaves, and numerical seeds.
+The program can generate planet maps using simplex noise and run a basic (for now) simulation of the society of randomly generated empires and species.  You are able to generate new maps inside the program and they can be tweaked in many ways such as size (obviously), sea level, temperature offset, octaves, and numerical seeds.  The program will then generate a user-defined number of empires which belong to a used-defined number of species.  These empires then fight for territory and expand as long as the program is running.
 
 # Requirements
 Python 3.6.X https://www.python.org/downloads/windows/
