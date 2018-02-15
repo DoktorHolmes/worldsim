@@ -7,7 +7,7 @@ The program can generate planet maps using simplex noise and run a basic (for no
 # Requirements
 Python 3.6.X https://www.python.org/downloads/windows/
 
-Noise - https://github.com/caseman/noise (pip install noise)
+Noise - https://github.com/caseman/noise (Download from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/#noise)
 
 Ansicolors - https://github.com/verigak/colors/ (pip install ansicolors)
 
